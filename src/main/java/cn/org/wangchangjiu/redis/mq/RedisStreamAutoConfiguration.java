@@ -1,6 +1,5 @@
 package cn.org.wangchangjiu.redis.mq;
 
-import io.lettuce.core.RedisBusyException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -15,7 +14,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.util.ErrorHandler;
 
-import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Executor;
@@ -34,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Configuration
 @ConditionalOnProperty(value = "redis.util.mq.enable", havingValue = "true" )
 @EnableConfigurationProperties({ MyRedisStreamProperties.class })
-public class RedisStreamConfiguration {
+public class RedisStreamAutoConfiguration {
 
     @Autowired
     private MyRedisStreamProperties myRedisStreamProperties;
