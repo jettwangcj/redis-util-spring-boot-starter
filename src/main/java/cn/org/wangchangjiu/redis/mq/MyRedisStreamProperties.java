@@ -12,7 +12,7 @@ import java.time.Duration;
  * @Created by wangchangjiu
  */
 @ConfigurationProperties(
-        prefix = "spring.redis.mq"
+        prefix = "redis.util.mq"
 )
 @Data
 public class MyRedisStreamProperties {
