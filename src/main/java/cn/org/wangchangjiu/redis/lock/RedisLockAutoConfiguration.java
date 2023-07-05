@@ -31,5 +31,11 @@ public class RedisLockAutoConfiguration {
     }
 
 
+    @Bean
+    @ConditionalOnBean({ RedissonClient.class })
+    @ConditionalOnMissingBean
+    public RedisLockTemplate redisLockTemplate(@Autowired RedissonClient redissonClient){
+        return new RedisLockTemplate(redissonClient);
+    }
 
 }
