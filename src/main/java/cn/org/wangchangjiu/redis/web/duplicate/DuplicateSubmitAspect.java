@@ -1,4 +1,4 @@
-package cn.org.wangchangjiu.redis.web.request;
+package cn.org.wangchangjiu.redis.web.duplicate;
 
 import cn.org.wangchangjiu.redis.common.MyAopUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -6,12 +6,9 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
 import java.lang.reflect.Method;
@@ -36,7 +33,7 @@ public class DuplicateSubmitAspect {
         this.redisTemplate = redisTemplate;
     }
 
-    @Pointcut("@annotation(cn.org.wangchangjiu.redis.web.request.DuplicateSubmit)")
+    @Pointcut("@annotation(cn.org.wangchangjiu.redis.web.duplicate.DuplicateSubmit)")
     public void pointCut() {
     }
 
