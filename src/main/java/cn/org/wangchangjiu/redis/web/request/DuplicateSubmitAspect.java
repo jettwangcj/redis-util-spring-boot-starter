@@ -1,5 +1,6 @@
 package cn.org.wangchangjiu.redis.web.request;
 
+import cn.org.wangchangjiu.redis.common.MyAopUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -43,7 +44,7 @@ public class DuplicateSubmitAspect {
 
     @Around("pointCut()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-        Method currentMethod = getCurrentMethod(joinPoint);
+        Method currentMethod = MyAopUtil.getCurrentMethod(joinPoint);
         String duplicateKey = null;
         if(currentMethod != null){
             DuplicateSubmit annotation = currentMethod.getAnnotation(DuplicateSubmit.class);
@@ -74,21 +75,6 @@ public class DuplicateSubmitAspect {
         return object;
     }
 
-    private Method getCurrentMethod(ProceedingJoinPoint joinPoint) {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = signature.getMethod();
 
-        // 上面拿到的可能是接口的方法，所以需要以下的操作来确保获取到的是实现类的方法
-        if (method.getDeclaringClass().isInterface()) {
-            try {
-                return joinPoint.getTarget().getClass().getDeclaredMethod(joinPoint.getSignature().getName(),
-                        method.getParameterTypes());
-            } catch (final SecurityException | NoSuchMethodException e) {
-                log.error("无法获取当前的Method：{}", joinPoint.getSignature().getName());
-                throw new RuntimeException("无法获取当前的Method", e);
-            }
-        }
-        return method;
-    }
 
 }

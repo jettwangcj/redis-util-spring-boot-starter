@@ -1,6 +1,8 @@
-package cn.org.wangchangjiu.redis.web.request;
+package cn.org.wangchangjiu.redis.lock;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -8,25 +10,26 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
 
 /**
- * @Classname DuplicateSubmitAutoConfiguration
- * @Description
- * @Date 2023/7/3 18:28
+ * @Classname RedisLockAutoConfiguration
+ * @Description redis lock 自动配置
+ * @Date 2023/7/5 10:12
  * @Created by wangchangjiu
  */
+@Slf4j
 @Configuration
-@ConditionalOnProperty(value = "redis.util.duplicate.enable", havingValue = "true" )
-@ConditionalOnClass({ RedisTemplate.class, Aspect.class})
-public class DuplicateSubmitAutoConfiguration {
+@ConditionalOnProperty(value = "redis.util.lock.enable", havingValue = "true", matchIfMissing = true )
+@ConditionalOnClass({ RedissonClient.class, Aspect.class})
+public class RedisLockAutoConfiguration {
 
     @Bean
-    @ConditionalOnBean({ RedisTemplate.class })
+    @ConditionalOnBean({ RedissonClient.class })
     @ConditionalOnMissingBean
-    public DuplicateSubmitAspect duplicateSubmitAspect(@Autowired RedisTemplate<Object, Object> redisTemplate){
-        return new DuplicateSubmitAspect(redisTemplate);
+    public RedisLockAspect duplicateSubmitAspect(@Autowired RedissonClient redissonClient){
+        return new RedisLockAspect(redissonClient);
     }
+
 
 
 }

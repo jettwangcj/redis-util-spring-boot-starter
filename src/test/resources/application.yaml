@@ -1,8 +1,0 @@
-spring:
-  data:
-    redis:
-      database: 8
-      host: r-t4nopimrmixrtt0nl1.redis.singapore.rds.aliyuncs.com
-      password: V5tz6jOdAoaCWTHe
-      port: 6379
-      timeout: 3000ms
