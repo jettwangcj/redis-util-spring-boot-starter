@@ -46,7 +46,7 @@ public class DelayQueueMessageConsumer implements BeanPostProcessor {
             for (Map.Entry<Method, RedisDelayMessageListener> entry : temp.entrySet()) {
                 RedisDelayMessageConsumerContainer consumerContainer = new RedisDelayMessageConsumerContainer(bean, entry.getKey(), entry.getValue());
                 RedisDelayMessageListener redisDelayMessageListener = entry.getValue();
-                consumerContainerGroups.merge(redisDelayMessageListener.queue(),
+                consumerContainerGroups.merge(redisDelayMessageListener.topic(),
                         consumerContainer,
                         (redisDelayMessageConsumerContainer, redisDelayMessageConsumerContainer2) -> redisDelayMessageConsumerContainer2);
 

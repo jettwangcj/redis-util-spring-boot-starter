@@ -1,7 +1,5 @@
 package cn.org.wangchangjiu.redis.delay;
 
-import cn.org.wangchangjiu.redis.mq.RedisMessageListener;
-import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -35,7 +33,7 @@ public class RedisDelayMessageConsumerContainer {
         this.method = method;
         this.redisDelayMessageListener = redisDelayMessageListener;
 
-        if(!StringUtils.hasText(this.redisDelayMessageListener.queue())){
+        if(!StringUtils.hasText(this.redisDelayMessageListener.topic())){
             throw new RuntimeException("redisMessageListener groupId or queue cannot empty");
         }
 
