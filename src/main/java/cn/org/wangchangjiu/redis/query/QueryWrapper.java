@@ -1,6 +1,8 @@
 package cn.org.wangchangjiu.redis.query;
 
-import java.util.Set;
+import lombok.Data;
+
+import java.util.Map;
 
 /**
  * @Classname QueryWrapper
@@ -8,19 +10,20 @@ import java.util.Set;
  * @Date 2023/7/4 18:00
  * @Created by wangchangjiu
  */
-public class QueryWrapper {
+@Data
+public class QueryWrapper<T> {
 
+   Class<T> entityClass;
 
    /**
     *  查询字段
     */
-   private Set<String> queryFields;
+   private Map<String, String> queryFields;
 
-   /**
-    *  排序字段
-    */
-   private String orderBy;
 
+   private Integer page;
+
+   private Integer size;
 
 
 }

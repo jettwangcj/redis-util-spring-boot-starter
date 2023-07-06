@@ -40,7 +40,7 @@ public class RedisLockTemplate {
             lock.lock(leaseTime, timeUnit);
             return task.execute();
         } finally {
-            if (lock != null && lock.isLocked()) {
+            if (lock != null && lock.isLocked() && lock.isHeldByCurrentThread()) {
                 lock.unlock();
             }
         }
@@ -61,7 +61,7 @@ public class RedisLockTemplate {
         } catch (InterruptedException e) {
 
         } finally {
-            if (lock != null && lock.isLocked()) {
+            if (lock != null && lock.isLocked() && lock.isHeldByCurrentThread()) {
                 lock.unlock();
             }
         }
