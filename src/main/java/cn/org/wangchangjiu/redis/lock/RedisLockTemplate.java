@@ -1,6 +1,5 @@
 package cn.org.wangchangjiu.redis.lock;
 
-import javafx.concurrent.Task;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;

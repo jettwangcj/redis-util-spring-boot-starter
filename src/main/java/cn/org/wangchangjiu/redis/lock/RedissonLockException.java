@@ -2,7 +2,7 @@ package cn.org.wangchangjiu.redis.lock;
 
 /**
  * @Classname RedissonLockException
- * @Description TODO
+ * @Description
  * @Date 2023/7/5 11:58
  * @Created by wangchangjiu
  */

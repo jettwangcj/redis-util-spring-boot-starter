@@ -2,6 +2,7 @@ package cn.org.wangchangjiu.redis.query;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Map;
  * @Created by wangchangjiu
  */
 @Data
-public class QueryWrapper<T> {
+public class QueryWrapper<T> implements Serializable {
 
    Class<T> entityClass;
 
@@ -25,5 +26,6 @@ public class QueryWrapper<T> {
 
    private Integer size;
 
+   private boolean desc;
 
 }
