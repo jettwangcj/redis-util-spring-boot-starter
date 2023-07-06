@@ -1,7 +1,5 @@
 package cn.org.wangchangjiu.redis.delay;
 
-import cn.org.wangchangjiu.redis.mq.RedisMessageConsumerContainer;
-import cn.org.wangchangjiu.redis.mq.RedisMessageListener;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.support.AopUtils;
