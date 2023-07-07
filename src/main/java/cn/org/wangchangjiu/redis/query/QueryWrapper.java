@@ -12,9 +12,7 @@ import java.util.Map;
  * @Created by wangchangjiu
  */
 @Data
-public class QueryWrapper<T> implements Serializable {
-
-   Class<T> entityClass;
+public class QueryWrapper implements Serializable {
 
    /**
     *  查询字段

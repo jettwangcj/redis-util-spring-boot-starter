@@ -1,7 +1,11 @@
 package cn.org.wangchangjiu.redis.query;
 
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.data.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * @Classname QueryUtil
@@ -17,11 +21,15 @@ public class QueryUtil {
             throw new RedisQueryException("");
         }
 
-        /*String keyName = fieldRuleKey.keyName();
-        if(!StringUtils.hasText(keyName)){
+        String scoreMethod = fieldRuleKey.getScoreMethod();
+        Optional<Method> method = ReflectionUtils.getMethod(clazz, scoreMethod);
+        if(!method.isPresent()){
             throw new RedisQueryException("");
-        }*/
+        }
 
+        if(!Double.class.equals(method.get().getReturnType())){
+            throw new RedisQueryException("");
+        }
         return fieldRuleKey;
     }
 

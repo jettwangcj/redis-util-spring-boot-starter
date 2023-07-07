@@ -22,4 +22,5 @@ public @interface FieldRuleKey {
 
    TimeUnit timeUnit() default TimeUnit.SECONDS;
 
+   String getScoreMethod() default "getScore";
 }
