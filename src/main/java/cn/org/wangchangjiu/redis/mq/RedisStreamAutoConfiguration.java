@@ -20,6 +20,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -30,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 @Configuration
-@ConditionalOnProperty(value = "redis.util.mq.enable", havingValue = "true" )
+/*@ConditionalOnProperty(value = "redis.util.mq.enable", havingValue = "true" )*/
 @EnableConfigurationProperties({ MyRedisStreamProperties.class })
 public class RedisStreamAutoConfiguration {
 
@@ -87,14 +88,7 @@ public class RedisStreamAutoConfiguration {
         consumerContainerGroups.forEach((groupQueue, redisMessageConsumerContainer) -> {
             String[] groupQueues = groupQueue.split("#");
 
-            if (stringRedisTemplate.hasKey(groupQueues[1])) {
-                StreamInfo.XInfoGroups groups = stringRedisTemplate.opsForStream().groups(groupQueues[0]);
-                if (groups.isEmpty()) {
-                    stringRedisTemplate.opsForStream().createGroup(groupQueues[1], groupQueues[0]);
-                }
-            } else {
-                stringRedisTemplate.opsForStream().createGroup(groupQueues[1], groupQueues[0]);
-            }
+            createGroups(groupQueues);
 
             RedisMessageListener redisMessageListener = redisMessageConsumerContainer.getRedisMessageListener();
             if(!redisMessageListener.useGroup()){
@@ -111,6 +105,31 @@ public class RedisStreamAutoConfiguration {
             }
         });
         return streamMessageListenerContainer;
+    }
+
+    /**
+     *  创建消费组
+     * @param groupQueues
+     */
+    private void createGroups(String[] groupQueues) {
+        if (stringRedisTemplate.hasKey(groupQueues[1])) {
+            StreamInfo.XInfoGroups groups = stringRedisTemplate.opsForStream().groups(groupQueues[1]);
+            if (groups.isEmpty()) {
+                stringRedisTemplate.opsForStream().createGroup(groupQueues[1], groupQueues[0]);
+            } else {
+                AtomicBoolean exists= new AtomicBoolean(false);
+                groups.forEach(xInfoGroup -> {
+                    if (xInfoGroup.groupName().equals(groupQueues[0])){
+                        exists.set(true);
+                    }
+                });
+                if(!exists.get()){
+                    stringRedisTemplate.opsForStream().createGroup(groupQueues[1], groupQueues[0]);
+                }
+            }
+        } else {
+            stringRedisTemplate.opsForStream().createGroup(groupQueues[1], groupQueues[0]);
+        }
     }
 
     private Executor getStreamMessageListenerExecutor() {

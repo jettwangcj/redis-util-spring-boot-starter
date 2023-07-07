@@ -17,16 +17,16 @@ import org.springframework.context.annotation.DependsOn;
  * @Created by wangchangjiu
  */
 @Configuration
-@ConditionalOnBean({ RedissonClient.class })
+/*@ConditionalOnBean({ RedissonClient.class })*/
 @EnableConfigurationProperties({ RedissonDelayProperties.class })
-@ConditionalOnProperty(value = "redis.util.delay.enable", havingValue = "true" )
+/*@ConditionalOnProperty(value = "redis.util.delay.enable", havingValue = "true" )*/
 public class DelayQueueAutoConfiguration {
 
 
     @Autowired
     private RedissonDelayProperties properties;
 
-    @Autowired
+    @Autowired(required = false)
     private RedissonClient redisson;
 
     @Bean
