@@ -1,7 +1,7 @@
 package cn.org.wangchangjiu.redis.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
 
@@ -17,11 +17,11 @@ import java.util.concurrent.TimeUnit;
  */
 
 @Slf4j
-public class RedisBloomUtil {
+public class RedisBloomUtils {
 
-    private RedisTemplate<String, Object> redisTemplate;
+    private StringRedisTemplate redisTemplate;
 
-    public RedisBloomUtil(RedisTemplate<String, Object> redisTemplate){
+    public RedisBloomUtils(StringRedisTemplate redisTemplate){
         this.redisTemplate = redisTemplate;
     }
 
