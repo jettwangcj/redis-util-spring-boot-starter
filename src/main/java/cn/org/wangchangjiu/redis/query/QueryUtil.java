@@ -2,7 +2,6 @@ package cn.org.wangchangjiu.redis.query;
 
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
