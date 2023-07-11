@@ -3,6 +3,7 @@ package cn.org.wangchangjiu.redis.mq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 @Configuration
-/*@ConditionalOnProperty(value = "redis.util.mq.enable", havingValue = "true" )*/
+@ConditionalOnProperty(value = "redis.util.mq.enable", havingValue = "true" )
 @EnableConfigurationProperties({ MyRedisStreamProperties.class })
 public class RedisStreamAutoConfiguration {
 
