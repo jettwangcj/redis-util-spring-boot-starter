@@ -82,12 +82,15 @@ public class RedisStreamAutoConfiguration {
         StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamMessageListenerContainer =
                 StreamMessageListenerContainer.create(redisConnectionFactory, containerOptions);
 
+        // 获取 被 RedisMessageListener 注解修饰的 bean
         Map<String, RedisMessageConsumerContainer> consumerContainerGroups =
                 redisMessageConsumerManager.getConsumerContainerGroups();
 
+        // 循环遍历，创建 消费组
         consumerContainerGroups.forEach((groupQueue, redisMessageConsumerContainer) -> {
             String[] groupQueues = groupQueue.split("#");
 
+            // 创建消费组
             createGroups(groupQueues);
 
             RedisMessageListener redisMessageListener = redisMessageConsumerContainer.getRedisMessageListener();
@@ -95,10 +98,13 @@ public class RedisStreamAutoConfiguration {
                 // 独立消费 不使用组
                 streamMessageListenerContainer.receive(StreamOffset.fromStart(groupQueues[1]), new DefaultGroupStreamListener(redisMessageConsumerContainer));
             } else {
+                // 消费组 消费
                 if(redisMessageListener.autoAck()){
+                    // 自动ACK
                     streamMessageListenerContainer.receiveAutoAck(Consumer.from(groupQueues[0], "consumer:" + UUID.randomUUID()),
                             StreamOffset.create(groupQueues[1], ReadOffset.lastConsumed()), new DefaultGroupStreamListener(redisMessageConsumerContainer));
                 } else {
+                    // 手动 ACK
                     streamMessageListenerContainer.receive(Consumer.from(groupQueues[0], "consumer:" + UUID.randomUUID()),
                             StreamOffset.create(groupQueues[1], ReadOffset.lastConsumed()), new DefaultGroupStreamListener(redisMessageConsumerContainer));
                 }
@@ -112,7 +118,9 @@ public class RedisStreamAutoConfiguration {
      * @param groupQueues
      */
     private void createGroups(String[] groupQueues) {
+        // 判断是否存在队列Key
         if (stringRedisTemplate.hasKey(groupQueues[1])) {
+            // 获取消费组 没有则创建
             StreamInfo.XInfoGroups groups = stringRedisTemplate.opsForStream().groups(groupQueues[1]);
             if (groups.isEmpty()) {
                 stringRedisTemplate.opsForStream().createGroup(groupQueues[1], groupQueues[0]);
