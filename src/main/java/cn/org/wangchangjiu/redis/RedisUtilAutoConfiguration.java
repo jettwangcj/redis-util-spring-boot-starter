@@ -6,6 +6,7 @@ import cn.org.wangchangjiu.redis.mq.RedisStreamAutoConfiguration;
 import cn.org.wangchangjiu.redis.util.RedisBloomUtils;
 import cn.org.wangchangjiu.redis.util.StringRedisTemplateSliceUtils;
 import cn.org.wangchangjiu.redis.web.duplicate.DuplicateSubmitAutoConfiguration;
+import cn.org.wangchangjiu.redis.web.limit.RedisLimitAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +24,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 @Import({ DelayQueueAutoConfiguration.class,
           RedisLockAutoConfiguration.class,
           RedisStreamAutoConfiguration.class,
-          DuplicateSubmitAutoConfiguration.class
+          DuplicateSubmitAutoConfiguration.class,
+          RedisLimitAutoConfiguration.class
   })
 public class RedisUtilAutoConfiguration {
 
