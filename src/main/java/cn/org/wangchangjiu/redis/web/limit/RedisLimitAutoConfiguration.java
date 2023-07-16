@@ -1,8 +1,10 @@
 package cn.org.wangchangjiu.redis.web.limit;
 
+import cn.org.wangchangjiu.redis.web.limit.aop.RedisRateLimitAspect;
 import cn.org.wangchangjiu.redis.web.limit.api.RedisLimitHandlerInterceptor;
 import cn.org.wangchangjiu.redis.web.limit.api.RedisLimitProperties;
 import cn.org.wangchangjiu.redis.web.limit.api.ApiConfigResolver;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -29,6 +31,13 @@ public class RedisLimitAutoConfiguration {
         redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("META-INF/scripts/request_rate_limiter.lua")));
         redisScript.setResultType(Long.class);
         return redisScript;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnClass({ Aspect.class })
+    public RedisRateLimitAspect redisRateLimitAspect(@Autowired RedisRateLimiter redisRateLimiter){
+        return new RedisRateLimitAspect(redisRateLimiter);
     }
 
 
