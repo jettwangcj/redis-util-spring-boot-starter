@@ -8,10 +8,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ApiConfigResolver implements ApplicationContextAware {
 
@@ -33,9 +32,12 @@ public class ApiConfigResolver implements ApplicationContextAware {
     }
 
     public Config mathConfig(String requestURI) {
-
-
-
+        if(!CollectionUtils.isEmpty(configMap.keySet())){
+            String path = CommonUtils.getOptimalPath(new ArrayList<>(configMap.keySet()), requestURI);
+            if(StringUtils.hasText(path)){
+               return configMap.get(path);
+            }
+        }
         return null;
     }
 

@@ -19,7 +19,7 @@ public class RedisLimitHandlerInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        ApiConfigResolver.Config config = this.apiConfigResolver.mathConfig(request.getRequestURI());
+        ApiConfigResolver.Config config = this.apiConfigResolver.mathConfig(request.getPathInfo());
         if(config != null){
             boolean allowed = this.redisRateLimiter.isAllowed(config.getKeyResolver().resolve(request), config.getReplenishRate(), config.getBurstCapacity());
             if(!allowed){

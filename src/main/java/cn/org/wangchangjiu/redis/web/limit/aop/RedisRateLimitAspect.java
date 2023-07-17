@@ -42,7 +42,7 @@ public class RedisRateLimitAspect implements ApplicationContextAware {
         if(currentMethod != null){
             RedisRateLimitConfig annotation = currentMethod.getAnnotation(RedisRateLimitConfig.class);
             if(annotation != null){
-                KeyResolver keyResolver = applicationContext.getBean(annotation.keyResolver());
+                KeyResolver keyResolver = applicationContext.getBean(annotation.keyResolver(), KeyResolver.class);
                 HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
                 boolean allowed = redisRateLimiter.isAllowed(keyResolver.resolve(request), annotation.replenishRate(), annotation.burstCapacity());
                 if(!allowed){

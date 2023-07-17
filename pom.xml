@@ -50,6 +50,8 @@
 
     <properties>
         <java.version>11</java.version>
+        <fastjson.version>1.2.58</fastjson.version>
+        <redisson.version>3.21.1</redisson.version>
     </properties>
     <dependencies>
         <dependency>
@@ -78,13 +80,13 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.58</version>
+            <version>${fastjson.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson-spring-boot-starter</artifactId>
-            <version>3.11.2</version>
-            <scope>compile</scope>
+            <version>${redisson.version}</version>
         </dependency>
 
     </dependencies>

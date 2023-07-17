@@ -19,7 +19,7 @@ public @interface RedisRateLimitConfig {
     /**
      * 限流维度（限流Key）
      */
-    Class<? extends KeyResolver> keyResolver() default KeyResolver.DefaultKeyResolver.class;
+   String keyResolver() default "ipKeyResolver";
 
 
     /**

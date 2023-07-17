@@ -26,7 +26,7 @@ public class RedisLockAutoConfiguration {
     @Bean
     @ConditionalOnBean({ RedissonClient.class })
     @ConditionalOnMissingBean
-    public RedisLockAspect duplicateSubmitAspect(@Autowired RedissonClient redissonClient){
+    public RedisLockAspect redisLockAspect(@Autowired RedissonClient redissonClient){
         return new RedisLockAspect(redissonClient);
     }
 
