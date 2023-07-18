@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
@@ -16,10 +17,15 @@ public class ApiConfigResolver implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
+    private RedisLimitProperties redisLimitProperties;
+
     private static final Map<String, Config> configMap = new HashMap<>();
 
     public ApiConfigResolver(RedisLimitProperties redisLimitProperties){
+        this.redisLimitProperties = redisLimitProperties;
+    }
 
+    public void initMethod(){
         List<RedisLimitProperties.Config> configs = redisLimitProperties.getConfigs();
         if(!CollectionUtils.isEmpty(configs)){
             configs.stream().forEach(config -> {
@@ -28,7 +34,6 @@ public class ApiConfigResolver implements ApplicationContextAware {
                 configMap.put(f.getPath(), f);
             });
         }
-
     }
 
     public Config mathConfig(String requestURI) {

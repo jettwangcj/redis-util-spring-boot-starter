@@ -1,7 +1,7 @@
 package cn.org.wangchangjiu.redis.web.limit;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
 
 import java.time.Instant;
@@ -13,10 +13,10 @@ public class RedisRateLimiter {
 
     private static final String EMPTY_KEY = "____EMPTY_KEY__";
 
-    private StringRedisTemplate redisTemplate;
-    private RedisScript<Long> script;
+    private RedisTemplate<String, Object> redisTemplate;
+    private RedisScript<Number> script;
 
-    public RedisRateLimiter(StringRedisTemplate redisTemplate, RedisScript<Long> script){
+    public RedisRateLimiter(RedisTemplate<String, Object> redisTemplate, RedisScript<Number> script){
 
         this.redisTemplate = redisTemplate;
         this.script = script;
@@ -37,9 +37,9 @@ public class RedisRateLimiter {
 
         try {
             List<String> keys = getKeys(id);
-            List<String> scriptArgs = Arrays.asList(replenishRate + "", burstCapacity + "", Instant.now().getEpochSecond() + "", "1");
-            Long result  = this.redisTemplate.execute(this.script, keys, scriptArgs);
-            return result == 1L;
+           // List<String> scriptArgs = Arrays.asList();
+            Number result  = this.redisTemplate.execute(this.script, keys, replenishRate, burstCapacity, Instant.now().getEpochSecond(), 1);
+            return result.intValue() == 1;
         } catch (Exception var9) {
             log.error("Error determining if user allowed from redis", var9);
             return false;

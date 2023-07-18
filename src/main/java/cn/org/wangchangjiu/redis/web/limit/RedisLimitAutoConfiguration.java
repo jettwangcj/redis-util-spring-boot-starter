@@ -1,9 +1,9 @@
 package cn.org.wangchangjiu.redis.web.limit;
 
 import cn.org.wangchangjiu.redis.web.limit.aop.RedisRateLimitAspect;
+import cn.org.wangchangjiu.redis.web.limit.api.ApiConfigResolver;
 import cn.org.wangchangjiu.redis.web.limit.api.RedisLimitHandlerInterceptor;
 import cn.org.wangchangjiu.redis.web.limit.api.RedisLimitProperties;
-import cn.org.wangchangjiu.redis.web.limit.api.ApiConfigResolver;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,12 +13,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.*;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.data.web.config.QuerydslWebConfiguration;
 import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -27,14 +33,33 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @ConditionalOnProperty(value = "redis.util.limit.enable", havingValue = "true")
-@ConditionalOnBean({ StringRedisTemplate.class })
+@EnableConfigurationProperties({ RedisLimitProperties.class })
+@Slf4j
 public class RedisLimitAutoConfiguration {
+
+    @Bean("limitRedisTemplate")
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+
+        //设置value的序列化方式为JSOn
+        redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);
+        //设置key的序列化方式为String
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(jackson2JsonRedisSerializer);
+        redisTemplate.afterPropertiesSet();
+
+        return redisTemplate;
+    }
 
     @Bean
     public RedisScript redisRequestRateLimiterScript() {
         DefaultRedisScript redisScript = new DefaultRedisScript();
         redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("META-INF/scripts/request_rate_limiter.lua")));
-        redisScript.setResultType(Long.class);
+        redisScript.setResultType(Number.class);
         return redisScript;
     }
 
@@ -49,35 +74,33 @@ public class RedisLimitAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnClass({ HandlerInterceptor.class })
-    @ConditionalOnBean({ ApiConfigResolver.class, RedisRateLimiter.class })
     public RedisLimitHandlerInterceptor redisLimitHandlerInterceptor(@Autowired RedisRateLimiter redisRateLimiter,
                                                                      @Autowired ApiConfigResolver apiConfigResolver){
+
         return new RedisLimitHandlerInterceptor(redisRateLimiter, apiConfigResolver);
     }
 
-    @Bean
+    @Bean(initMethod = "initMethod")
     @ConditionalOnMissingBean
-    @ConditionalOnBean(value = RedisLimitProperties.class )
-    public ApiConfigResolver requestConfigResolver(@Autowired RedisLimitProperties redisLimitProperties){
+    public ApiConfigResolver apiConfigResolver(@Autowired RedisLimitProperties redisLimitProperties){
         return new ApiConfigResolver(redisLimitProperties);
     }
 
 
     @Bean
     @ConditionalOnMissingBean
-    public RedisRateLimiter redisRateLimiter(@Autowired StringRedisTemplate redisTemplate, @Qualifier("redisRequestRateLimiterScript") RedisScript<Long> redisScript) {
+    public RedisRateLimiter redisRateLimiter(@Qualifier(value = "limitRedisTemplate") RedisTemplate<String, Object> redisTemplate, @Qualifier("redisRequestRateLimiterScript") RedisScript<Number> redisScript) {
         return new RedisRateLimiter(redisTemplate, redisScript);
     }
 
-    @Configuration
-    @ConditionalOnBean(value = RedisLimitHandlerInterceptor.class)
+
+   @Configuration
    public class MvcConfigurer implements WebMvcConfigurer {
 
         @Autowired
         private RedisLimitHandlerInterceptor redisLimitHandlerInterceptor;
         @Override
         public void addInterceptors(InterceptorRegistry registry) {
-
             registry.addInterceptor(redisLimitHandlerInterceptor).addPathPatterns("/**");
        }
 
