@@ -18,8 +18,12 @@ public @interface RedisRateLimitConfig {
 
     /**
      * 限流维度（限流Key）
+     * 支持：
+     * bean 名字
+     *
+     * spel key
      */
-   String keyResolver() default "ipKeyResolver";
+   String keyResolver() default "";
 
 
     /**

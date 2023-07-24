@@ -1,4 +1,4 @@
-package cn.org.wangchangjiu.redis.lock;
+package cn.org.wangchangjiu.redis.common;
 
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.expression.EvaluationContext;

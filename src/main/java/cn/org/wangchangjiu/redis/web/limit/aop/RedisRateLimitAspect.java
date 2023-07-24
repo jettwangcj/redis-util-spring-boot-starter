@@ -1,6 +1,7 @@
 package cn.org.wangchangjiu.redis.web.limit.aop;
 
 import cn.org.wangchangjiu.redis.common.MyAopUtil;
+import cn.org.wangchangjiu.redis.common.SpElUtil;
 import cn.org.wangchangjiu.redis.web.limit.KeyResolver;
 import cn.org.wangchangjiu.redis.web.limit.RedisLimitException;
 import cn.org.wangchangjiu.redis.web.limit.RedisRateLimiter;
@@ -42,9 +43,15 @@ public class RedisRateLimitAspect implements ApplicationContextAware {
         if(currentMethod != null){
             RedisRateLimitConfig annotation = currentMethod.getAnnotation(RedisRateLimitConfig.class);
             if(annotation != null){
-                KeyResolver keyResolver = applicationContext.getBean(annotation.keyResolver(), KeyResolver.class);
-                HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-                boolean allowed = redisRateLimiter.isAllowed(keyResolver.resolve(request), annotation.replenishRate(), annotation.burstCapacity());
+
+                String keyResolver = SpElUtil.parseSpEl(currentMethod, joinPoint.getArgs(), annotation.keyResolver());
+                KeyResolver keyResolverBean = applicationContext.getBean(annotation.keyResolver(), KeyResolver.class);
+                if(keyResolverBean != null){
+                    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+                    keyResolver = keyResolverBean.resolve(request);
+                }
+
+                boolean allowed = redisRateLimiter.isAllowed(keyResolver, annotation.replenishRate(), annotation.burstCapacity());
                 if(!allowed){
                     if(annotation.exceptionWithLimit()){
                         throw new RedisLimitException("limit .....");
