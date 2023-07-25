@@ -37,8 +37,8 @@ public class RedisRateLimiter {
 
         try {
             List<String> keys = getKeys(id);
-           // List<String> scriptArgs = Arrays.asList();
-            Number result  = this.redisTemplate.execute(this.script, keys, replenishRate, burstCapacity, Instant.now().getEpochSecond(), 1);
+            Number result  = this.redisTemplate.execute(this.script, keys,
+                    replenishRate, burstCapacity, Instant.now().getEpochSecond(), 1);
             return result.intValue() == 1;
         } catch (Exception var9) {
             log.error("Error determining if user allowed from redis", var9);
