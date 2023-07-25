@@ -1,17 +1,22 @@
 package cn.org.wangchangjiu.redis.web.limit.api;
 
-import cn.org.wangchangjiu.redis.web.limit.*;
+import cn.org.wangchangjiu.redis.web.limit.CommonUtils;
+import cn.org.wangchangjiu.redis.web.limit.KeyResolver;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.event.EventListener;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ApiConfigResolver implements ApplicationContextAware {
 
@@ -25,6 +30,7 @@ public class ApiConfigResolver implements ApplicationContextAware {
         this.redisLimitProperties = redisLimitProperties;
     }
 
+    @EventListener(ApplicationReadyEvent.class)
     public void initMethod(){
         List<RedisLimitProperties.Config> configs = redisLimitProperties.getConfigs();
         if(!CollectionUtils.isEmpty(configs)){

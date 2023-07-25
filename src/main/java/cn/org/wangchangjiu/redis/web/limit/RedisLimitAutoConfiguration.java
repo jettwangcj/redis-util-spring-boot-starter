@@ -9,22 +9,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.data.web.config.QuerydslWebConfiguration;
 import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -80,7 +77,7 @@ public class RedisLimitAutoConfiguration {
         return new RedisLimitHandlerInterceptor(redisRateLimiter, apiConfigResolver);
     }
 
-    @Bean(initMethod = "initMethod")
+    @Bean
     @ConditionalOnMissingBean
     public ApiConfigResolver apiConfigResolver(@Autowired RedisLimitProperties redisLimitProperties){
         return new ApiConfigResolver(redisLimitProperties);
@@ -112,13 +109,13 @@ public class RedisLimitAutoConfiguration {
     public static class BuiltInKeyResolver {
 
         @Bean(name = "ipKeyResolver")
-        @ConditionalOnMissingBean
+        @ConditionalOnMissingBean(name = "ipKeyResolver")
         public KeyResolver ipKeyResolver(){
             return request -> getIpAddr(request);
         }
 
         @Bean(name = "apiKeyResolver")
-        @ConditionalOnMissingBean
+        @ConditionalOnMissingBean(name = "apiKeyResolver")
         public KeyResolver apiKeyResolver(){
             return request -> request.getRequestURI();
         }
